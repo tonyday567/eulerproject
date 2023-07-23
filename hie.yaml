@@ -1,4 +1,0 @@
-cradle:
-  stack:
-    - path: "./app/euler.hs"
-      component: "euler:exe:euler"

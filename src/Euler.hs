@@ -1,4 +1,5 @@
 {-# LANGUAGE NegativeLiterals #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RebindableSyntax #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE DataKinds #-}
@@ -7,22 +8,29 @@
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
 {-# OPTIONS_GHC -Wno-missing-signatures #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
+{-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
+
+module Euler where
 
 import NumHask.Prelude
 import Data.Numbers.Primes (primes)
 import qualified Data.List as List
 import Data.Function
 import qualified NumHask.Array.Fixed as A
+-- import NumHask.Array.Shape
 import Text.InterpolatedString.Perl6
 import Data.Functor.Rep
 import qualified Prelude as P
 import Data.Char
-
+import qualified GHC.Arr as Arr
+import Data.Ord
+import GHC.TypeNats
+import Data.Proxy
 
 -- | Sum of Multiples
 --
 -- >>> euler1 [3,5] 1000
---
+-- 233168
 euler1 :: [Int] -> Int -> Int
 euler1 ns limit =
   [0..] &
@@ -30,6 +38,13 @@ euler1 ns limit =
   filter (\x -> any (\n -> x `mod` n == 0) ns) &
   sum
 
+-- | even fibonacci
+--
+-- classic: fibs = 1 : 1 : zipWith (+) fibs (tail fibs)
+--
+-- >>> euler2 4000000 (1,2)
+-- 4613732
+--
 euler2 :: Int -> (Int, Int) -> Int
 euler2 limit s@(s0,s1) =
   [s0,s1] <>
@@ -40,6 +55,10 @@ euler2 limit s@(s0,s1) =
   filter ((==0) . (`mod` 2)) &
   sum
 
+-- | primes
+--
+-- >>> euler3 600851475143
+-- 6857
 euler3 :: Int -> Int
 euler3 n = lfactor n primes
   where
@@ -49,25 +68,46 @@ euler3 n = lfactor n primes
       | n `mod` p == 0 = lfactor (n `div` p) (p:ps)
       | otherwise = lfactor n ps
 
-euler4 :: Int
-euler4 =
+-- | palindrome product
+--
+-- >>> euler4 (100, 999)
+-- 906609
+euler4 :: (Int,Int) -> Int
+euler4 (x,x') =
   maximum $
   fst <$>
   filter ((\x -> x == reverse x) . snd) (
    (\x -> (x, show x)) <$>
    ((*) <$>
-    [100..999] <*>
-    [100..999]))
+    [x..x'] <*>
+    [x..x']))
 
+-- | euler5
+--
+-- >>> euler5 20
+-- 232792560
+--
 euler5 :: Int -> Int
 euler5 n = foldl' (\x a -> (a * x) `div` gcd a x) 1 [1..n]
 
+-- | euler6
+--
+-- >>> euler6 100
+-- 25164150
 euler6 :: Int -> Int
 euler6 n = [1..n] & (\x -> (sum x * sum x) - sum ((\x -> x*x) <$> x))
 
+-- | primes
+--
+-- >>> euler7 10001
+-- 104743
 euler7 :: Int -> Int
 euler7 n = primes List.!! (n - 1)
 
+-- | euler8
+--
+-- >>> euler8 13
+-- 23514624000
 euler8 :: Int -> Int
 euler8 n =
   maximum $
@@ -78,6 +118,10 @@ euler8 n =
      (ord <$> digits)) <$>
   [0.. (length digits - n)]
 
+-- | euler9
+--
+-- >>> euler9 1000
+-- [31875000]
 euler9 :: Int -> [Int]
 euler9 n =
   (\(a,b,c) -> floor a * floor b * (floor c :: Int)) <$>
@@ -86,6 +130,10 @@ euler9 n =
    [1..(fromIntegral (n `div` 2) :: Double)] <*>
    [1..(fromIntegral (n `div` 2) :: Double)])
 
+-- | euler10
+--
+-- >>> euler10 2000000
+-- 142913828922
 euler10 :: Int -> Int
 euler10 n = sum $ takeWhile (<n) primes
 
@@ -137,6 +185,10 @@ euler11Data = [q|
 01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48
 |]
 
+-- | euler11
+--
+-- >>> euler11
+-- 70600674
 euler11 :: Int
 euler11 = maximum (h <> v <> d <> r)
   where
@@ -163,6 +215,10 @@ pfactor n (p:ps)
   | n `mod` p == 0 = p : pfactor (n `div` p) (p:ps)
   | otherwise = pfactor n ps
 
+-- | euler12
+--
+-- >>> euler12 500
+-- 76576500
 euler12 x = head $ filter ((>x) . factors') $ List.scanl1 (+) [1..]
 
 euler13Data :: String
@@ -269,8 +325,52 @@ euler13Data = [q|
 53503534226472524250874054075591789781264330331690
 |]
 
+
+-- | euler13
+--
+-- >>> euler13
+-- "5537376230"
 euler13 :: String
 euler13 = take 10 $ show $ sum (maybe (-1) fst . listToMaybe . reads <$> lines euler13Data :: [Integer])
+
+-- * collatz experiments
+
+-- | euler14 array version
+--
+euler14Array :: Int -> Int
+euler14Array n = fst $ maximumBy (comparing snd) $ Arr.assocs a
+  where
+    a = Arr.listArray (1,n) $ (0::Int) : map syr [2..n]
+    syr x =
+        if y <= n then 1 + a Arr.! y else 1 + syr y
+        where
+        y = if even x then x `div` 2 else 3 * x + 1
+
+euler14Array' :: Int -> Arr.Array Int Int
+euler14Array' n = a
+  where
+    a = Arr.listArray (1,n) $ (0::Int) : map syr [2..n]
+    syr x =
+        if y <= n then 1 + a Arr.! y else 1 + syr y
+        where
+        y = if even x then x `div` 2 else 3 * x + 1
+
+collatzArray :: A.Array '[10000] Int
+collatzArray =
+  tabulate go
+  where
+    go (0:_) = 1
+    go (i:_) = collatz2 collatzArray i
+
+collatz1 :: Int -> Int
+collatz1 x = bool (x `div` 2) (3*x+1) (even x)
+
+collatz2 ::
+  forall n. (KnownNat n) => A.Array '[n] Int -> Int -> Int
+collatz2 arr x = let y = collatz1 (x+1) in
+  bool (1+ collatz2 arr y) (1 + index arr [y]) (y <= s)
+  where
+    s = P.fromIntegral $ natVal @n Proxy
 
 collatz :: Int -> Int
 collatz x = go x 1
@@ -278,6 +378,11 @@ collatz x = go x 1
     go x n = let x' = bool (3*x+1) (x `div` 2) (even x) in
       bool (go x' (n+1)) (n+1) (1==x')
 
+-- | euler14
+--
+-- >>> euler14 1000000
+-- 837799
+--
 euler14 :: Int -> Int
 euler14 n = go 1 (1,1)
   where
