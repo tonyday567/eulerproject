@@ -1,7 +1,2 @@
 packages:
   eulerproject.cabal
-  ../perf/perf.cabal
-allow-newer:
-    numhask-space:semigroupoids,
-    numhask-space:tdigest,
-    tdigest:semigroupoids,

@@ -1,4 +1,4 @@
-cabal-version: 3.4
+cabal-version: 3.0
 name:          eulerproject
 version:       0.0.1
 synopsis: See readme.md
@@ -78,6 +78,8 @@ common ghc-options-stanza
     -Wincomplete-record-updates
     -Wincomplete-uni-patterns
     -Wredundant-constraints
+    -Widentities
+    -Wpartial-fields
 
 library
   import:
@@ -88,15 +90,12 @@ library
     src
   default-extensions:
   build-depends:
-    adjunctions,
+    adjunctions >= 4.4.2 && < 4.5,
     base >= 4.7 && < 5,
-    numhask >= 0.7 && < 0.11,
-    numhask-array,
-    numhask-space,
+    numhask >=0.11 && <0.12,
+    numhask-array >=0.11 && <0.12,
     primes >= 0.2 && < 0.3,
-    text,
-    interpolatedstring-perl6,
-    doctest >= 0.16 && < 0.23,
+    interpolatedstring-perl6 >= 1.0.2 && < 1.1,
   exposed-modules:
     Euler
 
@@ -108,13 +107,8 @@ executable perf-euler
   hs-source-dirs:   app
   build-depends:
     base >=4.7 && <5,
-    containers ^>=0.6,
-    deepseq >=1.4.4 && <1.5,
-    formatn >=0.2.1 && <0.4,
-    mtl >=2.2.2 && <2.4,
-    optparse-applicative ^>=0.17,
-    perf,
-    text >=1.2 && <2.1,
+    optparse-applicative >=0.17 && <0.19,
+    perf >=0.11 && <0.12,
     eulerproject,
   ghc-options:
     -O2

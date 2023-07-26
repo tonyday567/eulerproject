@@ -1,17 +1,14 @@
-{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# OPTIONS_GHC -Wall #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 -- | basic measurement and callibration
 module Main where
 
+import Control.Monad
 import Data.List (intercalate)
+import Euler
 import Options.Applicative
 import Perf
 import Prelude
-import Control.Monad
-import Euler
 
 data RunType = RunDefault deriving (Eq, Show)
 

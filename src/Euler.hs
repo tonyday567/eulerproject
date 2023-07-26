@@ -1,9 +1,7 @@
 {-# LANGUAGE NegativeLiterals #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RebindableSyntax #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE DataKinds #-}
-{-# OPTIONS_GHC -Wall #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
 {-# OPTIONS_GHC -Wno-missing-signatures #-}
@@ -15,7 +13,6 @@ module Euler where
 import NumHask.Prelude
 import Data.Numbers.Primes (primes)
 import qualified Data.List as List
-import Data.Function
 import qualified NumHask.Array.Fixed as A
 -- import NumHask.Array.Shape
 import Text.InterpolatedString.Perl6
@@ -337,6 +334,10 @@ euler13 = take 10 $ show $ sum (maybe (-1) fst . listToMaybe . reads <$> lines e
 
 -- | euler14 array version
 --
+-- >>> euler14Array 1000000
+-- 837799
+--
+--
 euler14Array :: Int -> Int
 euler14Array n = fst $ maximumBy (comparing snd) $ Arr.assocs a
   where
@@ -379,10 +380,6 @@ collatz x = go x 1
       bool (go x' (n+1)) (n+1) (1==x')
 
 -- | euler14
---
--- >>> euler14 1000000
--- 837799
---
 euler14 :: Int -> Int
 euler14 n = go 1 (1,1)
   where
