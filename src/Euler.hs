@@ -1,28 +1,29 @@
-{-# LANGUAGE NegativeLiterals #-}
-{-# LANGUAGE RebindableSyntax #-}
-{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE DataKinds #-}
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
-{-# OPTIONS_GHC -Wno-name-shadowing #-}
-{-# OPTIONS_GHC -Wno-missing-signatures #-}
+{-# LANGUAGE NegativeLiterals #-}
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE RebindableSyntax #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
+{-# OPTIONS_GHC -Wno-missing-signatures #-}
+{-# OPTIONS_GHC -Wno-name-shadowing #-}
+{-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
 module Euler where
 
-import NumHask.Prelude
-import Data.Numbers.Primes (primes)
-import qualified Data.List as List
-import qualified NumHask.Array.Fixed as A
 -- import NumHask.Array.Shape
-import Text.InterpolatedString.Perl6
-import Data.Functor.Rep
-import qualified Prelude as P
+
 import Data.Char
-import qualified GHC.Arr as Arr
+import Data.Functor.Rep
+import Data.List qualified as List
+import Data.Numbers.Primes (primes)
 import Data.Ord
-import GHC.TypeNats
 import Data.Proxy
+import GHC.Arr qualified as Arr
+import GHC.TypeNats
+import NumHask.Array.Fixed qualified as A
+import NumHask.Prelude
+import Text.InterpolatedString.Perl6
+import Prelude qualified as P
 
 -- | Sum of Multiples
 --
@@ -30,10 +31,10 @@ import Data.Proxy
 -- 233168
 euler1 :: [Int] -> Int -> Int
 euler1 ns limit =
-  [0..] &
-  take limit &
-  filter (\x -> any (\n -> x `mod` n == 0) ns) &
-  sum
+  [0 ..]
+    & take limit
+    & filter (\x -> any (\n -> x `mod` n == 0) ns)
+    & sum
 
 -- | even fibonacci
 --
@@ -41,16 +42,18 @@ euler1 ns limit =
 --
 -- >>> euler2 4000000 (1,2)
 -- 4613732
---
 euler2 :: Int -> (Int, Int) -> Int
-euler2 limit s@(s0,s1) =
-  [s0,s1] <>
-  List.unfoldr (\(s0',s1') ->
-             let n = s0' + s1' in
-               Just (n, (s1',n))) s &
-  takeWhile (<= limit) &
-  filter ((==0) . (`mod` 2)) &
-  sum
+euler2 limit s@(s0, s1) =
+  [s0, s1]
+    <> List.unfoldr
+      ( \(s0', s1') ->
+          let n = s0' + s1'
+           in Just (n, (s1', n))
+      )
+      s
+    & takeWhile (<= limit)
+    & filter ((== 0) . (`mod` 2))
+    & sum
 
 -- | primes
 --
@@ -60,39 +63,41 @@ euler3 :: Int -> Int
 euler3 n = lfactor n primes
   where
     lfactor _ [] = undefined
-    lfactor n (p:ps)
-      | p*p > n = n
-      | n `mod` p == 0 = lfactor (n `div` p) (p:ps)
+    lfactor n (p : ps)
+      | p * p > n = n
+      | n `mod` p == 0 = lfactor (n `div` p) (p : ps)
       | otherwise = lfactor n ps
 
 -- | palindrome product
 --
 -- >>> euler4 (100, 999)
 -- 906609
-euler4 :: (Int,Int) -> Int
-euler4 (x,x') =
+euler4 :: (Int, Int) -> Int
+euler4 (x, x') =
   maximum $
-  fst <$>
-  filter ((\x -> x == reverse x) . snd) (
-   (\x -> (x, show x)) <$>
-   ((*) <$>
-    [x..x'] <*>
-    [x..x']))
+    fst
+      <$> filter
+        ((\x -> x == reverse x) . snd)
+        ( (\x -> (x, show x))
+            <$> ( (*)
+                    <$> [x .. x']
+                    <*> [x .. x']
+                )
+        )
 
 -- | euler5
 --
 -- >>> euler5 20
 -- 232792560
---
 euler5 :: Int -> Int
-euler5 n = foldl' (\x a -> (a * x) `div` gcd a x) 1 [1..n]
+euler5 n = foldl' (\x a -> (a * x) `div` gcd a x) 1 [1 .. n]
 
 -- | euler6
 --
 -- >>> euler6 100
 -- 25164150
 euler6 :: Int -> Int
-euler6 n = [1..n] & (\x -> (sum x * sum x) - sum ((\x -> x*x) <$> x))
+euler6 n = [1 .. n] & (\x -> (sum x * sum x) - sum ((\x -> x * x) <$> x))
 
 -- | primes
 --
@@ -108,12 +113,14 @@ euler7 n = primes List.!! (n - 1)
 euler8 :: Int -> Int
 euler8 n =
   maximum $
-  (\i ->
-     product $
-     take n $
-     drop i $ (\x -> x - 48) <$>
-     (ord <$> digits)) <$>
-  [0.. (length digits - n)]
+    ( \i ->
+        product $
+          take n $
+            drop i $
+              (\x -> x - 48)
+                <$> (ord <$> digits)
+    )
+      <$> [0 .. (length digits - n)]
 
 -- | euler9
 --
@@ -121,21 +128,26 @@ euler8 n =
 -- [31875000]
 euler9 :: Int -> [Int]
 euler9 n =
-  (\(a,b,c) -> floor a * floor b * (floor c :: Int)) <$>
-  filter (\(a,b,c) -> (a<=b) && a+b+c == fromIntegral n) (
-   (\a b -> (a,b,sqrt (a*a + b*b))) <$>
-   [1..(fromIntegral (n `div` 2) :: Double)] <*>
-   [1..(fromIntegral (n `div` 2) :: Double)])
+  (\(a, b, c) -> floor a * floor b * (floor c :: Int))
+    <$> filter
+      (\(a, b, c) -> (a <= b) && a + b + c == fromIntegral n)
+      ( (\a b -> (a, b, sqrt (a * a + b * b)))
+          <$> [1 .. (fromIntegral (n `div` 2) :: Double)]
+          <*> [1 .. (fromIntegral (n `div` 2) :: Double)]
+      )
 
 -- | euler10
 --
 -- >>> euler10 2000000
 -- 142913828922
 euler10 :: Int -> Int
-euler10 n = sum $ takeWhile (<n) primes
+euler10 n = sum $ takeWhile (< n) primes
 
 digits :: String
-digits = filter (not . (`elem` [' ','\n','\r'])) [q|
+digits =
+  filter
+    (not . (`elem` [' ', '\n', '\r']))
+    [q|
     73167176531330624919225119674426574742355349194934
     96983520312774506326239578318016984801869478851843
     85861560789112949495459501737958331952853208805511
@@ -159,7 +171,8 @@ digits = filter (not . (`elem` [' ','\n','\r'])) [q|
 |]
 
 euler11Data :: String
-euler11Data = [q|
+euler11Data =
+  [q|
 08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08
 49 49 99 40 17 81 18 57 60 87 17 40 98 43 69 48 04 56 62 00
 81 49 31 73 55 79 14 29 93 71 40 67 53 88 30 03 49 13 36 65
@@ -190,36 +203,37 @@ euler11 :: Int
 euler11 = maximum (h <> v <> d <> r)
   where
     xs = maybe (-1) fst . listToMaybe . reads <$> words euler11Data :: [Int]
-    a = fromList xs :: A.Array '[20,20] Int
-    h = (\i j -> product ((\x -> index a [i,j+x]) <$> [0..3])) <$> [0..19] <*> [0..16]
-    v = (\i j -> product ((\x -> index a [i+x,j]) <$> [0..3])) <$> [0..16] <*> [0..19]
-    d = (\i j -> product ((\x -> index a [i+x,j+x]) <$> [0..3])) <$> [0..16] <*> [0..16]
-    r = (\i j -> product ((\x -> index a [i+x,j-x]) <$> [0..3])) <$> [0..16] <*> [3..19]
+    a = fromList xs :: A.Array '[20, 20] Int
+    h = (\i j -> product ((\x -> index a [i, j + x]) <$> [0 .. 3])) <$> [0 .. 19] <*> [0 .. 16]
+    v = (\i j -> product ((\x -> index a [i + x, j]) <$> [0 .. 3])) <$> [0 .. 16] <*> [0 .. 19]
+    d = (\i j -> product ((\x -> index a [i + x, j + x]) <$> [0 .. 3])) <$> [0 .. 16] <*> [0 .. 16]
+    r = (\i j -> product ((\x -> index a [i + x, j - x]) <$> [0 .. 3])) <$> [0 .. 16] <*> [3 .. 19]
 
 factors :: Int -> [Int]
 factors x = go x 1 []
   where
     go x n fs
       | x < n * n = fs
-      | x `mod` n == 0 = go x (n+1) (bool (n:(x `div` n):fs) (n:fs) (n == x `div` n))
-      | otherwise = go x (n+1) fs
+      | x `mod` n == 0 = go x (n + 1) (bool (n : (x `div` n) : fs) (n : fs) (n == x `div` n))
+      | otherwise = go x (n + 1) fs
 
-factors' x = product $ (+1) . length <$> List.group (pfactor x primes)
+factors' x = product $ (+ 1) . length <$> List.group (pfactor x primes)
 
 pfactor :: (Ord a, Integral a, FromInteger a) => a -> [a] -> [a]
-pfactor n (p:ps)
-  | p*p > n = [n]
-  | n `mod` p == 0 = p : pfactor (n `div` p) (p:ps)
+pfactor n (p : ps)
+  | p * p > n = [n]
+  | n `mod` p == 0 = p : pfactor (n `div` p) (p : ps)
   | otherwise = pfactor n ps
 
 -- | euler12
 --
 -- >>> euler12 500
 -- 76576500
-euler12 x = head $ filter ((>x) . factors') $ List.scanl1 (+) [1..]
+euler12 x = head $ filter ((> x) . factors') $ List.scanl1 (+) [1 ..]
 
 euler13Data :: String
-euler13Data = [q|
+euler13Data =
+  [q|
 37107287533902102798797998220837590246510135740250
 46376937677490009712648124896970078050417018260538
 74324986199524741059474233309513058123726617309629
@@ -322,7 +336,6 @@ euler13Data = [q|
 53503534226472524250874054075591789781264330331690
 |]
 
-
 -- | euler13
 --
 -- >>> euler13
@@ -336,64 +349,64 @@ euler13 = take 10 $ show $ sum (maybe (-1) fst . listToMaybe . reads <$> lines e
 --
 -- >>> euler14Array 1000000
 -- 837799
---
---
 euler14Array :: Int -> Int
 euler14Array n = fst $ maximumBy (comparing snd) $ Arr.assocs a
   where
-    a = Arr.listArray (1,n) $ (0::Int) : map syr [2..n]
+    a = Arr.listArray (1, n) $ (0 :: Int) : map syr [2 .. n]
     syr x =
-        if y <= n then 1 + a Arr.! y else 1 + syr y
-        where
+      if y <= n then 1 + a Arr.! y else 1 + syr y
+      where
         y = if even x then x `div` 2 else 3 * x + 1
 
 euler14Array' :: Int -> Arr.Array Int Int
 euler14Array' n = a
   where
-    a = Arr.listArray (1,n) $ (0::Int) : map syr [2..n]
+    a = Arr.listArray (1, n) $ (0 :: Int) : map syr [2 .. n]
     syr x =
-        if y <= n then 1 + a Arr.! y else 1 + syr y
-        where
+      if y <= n then 1 + a Arr.! y else 1 + syr y
+      where
         y = if even x then x `div` 2 else 3 * x + 1
 
 collatzArray :: A.Array '[10000] Int
 collatzArray =
   tabulate go
   where
-    go (0:_) = 1
-    go (i:_) = collatz2 collatzArray i
+    go (0 : _) = 1
+    go (i : _) = collatz2 collatzArray i
 
 collatz1 :: Int -> Int
-collatz1 x = bool (x `div` 2) (3*x+1) (even x)
+collatz1 x = bool (x `div` 2) (3 * x + 1) (even x)
 
 collatz2 ::
   forall n. (KnownNat n) => A.Array '[n] Int -> Int -> Int
-collatz2 arr x = let y = collatz1 (x+1) in
-  bool (1+ collatz2 arr y) (1 + index arr [y]) (y <= s)
+collatz2 arr x =
+  let y = collatz1 (x + 1)
+   in bool (1 + collatz2 arr y) (1 + index arr [y]) (y <= s)
   where
     s = P.fromIntegral $ natVal @n Proxy
 
 collatz :: Int -> Int
 collatz x = go x 1
   where
-    go x n = let x' = bool (3*x+1) (x `div` 2) (even x) in
-      bool (go x' (n+1)) (n+1) (1==x')
+    go x n =
+      let x' = bool (3 * x + 1) (x `div` 2) (even x)
+       in bool (go x' (n + 1)) (n + 1) (1 == x')
 
 -- | euler14
 euler14 :: Int -> Int
-euler14 n = go 1 (1,1)
+euler14 n = go 1 (1, 1)
   where
     go x (max', maxx) =
       bool
-      maxx
-      (go (x+1) (bool (max', maxx) (collatz x, x) (collatz x > max')))
-      (n >= x)
+        maxx
+        (go (x + 1) (bool (max', maxx) (collatz x, x) (collatz x > max')))
+        (n >= x)
 
 euler15 :: Int -> Int
 euler15 n = iterate (List.scanl1 (+)) (repeat 1) List.!! n List.!! n
 
 euler16 :: Int -> Int
-euler16 x = sum $ (\x -> ord x - 48) <$> (show (2 P.^ x :: Integer))
+euler16 x = sum $ (\x -> ord x - 48) <$> show (2 P.^ x :: Integer)
 
 main :: IO ()
 main =
