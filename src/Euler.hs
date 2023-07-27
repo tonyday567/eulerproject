@@ -22,8 +22,8 @@ import GHC.Arr qualified as Arr
 import GHC.TypeNats
 import NumHask.Array.Fixed qualified as A
 import NumHask.Prelude
-import Text.InterpolatedString.Perl6
 import Prelude qualified as P
+import Data.String.Interpolate
 
 -- | Sum of Multiples
 --
@@ -147,7 +147,7 @@ digits :: String
 digits =
   filter
     (not . (`elem` [' ', '\n', '\r']))
-    [q|
+    [i|
     73167176531330624919225119674426574742355349194934
     96983520312774506326239578318016984801869478851843
     85861560789112949495459501737958331952853208805511
@@ -172,7 +172,7 @@ digits =
 
 euler11Data :: String
 euler11Data =
-  [q|
+  [i|
 08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08
 49 49 99 40 17 81 18 57 60 87 17 40 98 43 69 48 04 56 62 00
 81 49 31 73 55 79 14 29 93 71 40 67 53 88 30 03 49 13 36 65
@@ -233,7 +233,7 @@ euler12 x = head $ filter ((> x) . factors') $ List.scanl1 (+) [1 ..]
 
 euler13Data :: String
 euler13Data =
-  [q|
+  [i|
 37107287533902102798797998220837590246510135740250
 46376937677490009712648124896970078050417018260538
 74324986199524741059474233309513058123726617309629
