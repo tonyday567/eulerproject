@@ -3,19 +3,19 @@ name: eulerproject
 version: 0.0.1
 license: BSD-3-Clause
 license-file: LICENSE
-copyright: Tony Day (c) AfterTimes
+copyright: Tony Day (c) 2021
 category: project
 author: Tony Day
 maintainer: tonyday567@gmail.com
-homepage: https://github.com/tonyday567/euler#readme
-bug-reports: https://github.com/tonyday567/euler/issues
+homepage: https://github.com/tonyday567/eulerproject#readme
+bug-reports: https://github.com/tonyday567/eulerproject/issues
 synopsis: See readme.md
 description: See readme.md for description.
 build-type: Simple
 
 source-repository head
     type: git
-    location: https://github.com/tonyday567/euler
+    location: https://github.com/tonyday567/eulerproject
 
 common ghc-options-stanza
     ghc-options:
