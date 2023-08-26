@@ -94,6 +94,9 @@ library
         , numhask-array      >=0.10 && <0.12
         , primes             >=0.2 && <0.3
         , string-interpolate >=0.3 && <0.4
+        , time
+        , containers
+        , text
     exposed-modules: Euler
     default-extensions:
 
