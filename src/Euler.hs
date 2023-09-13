@@ -606,9 +606,44 @@ rangeAB = (,) <$> [-999 .. 999] <*> [-1000 .. 1000]
 
 problem_27 :: Int
 problem_27 = -(2*a-1)*(a*a-a+41)
-  where n = 1000
-        m = head $ filter (\x->x*x-x+41>n) [1..]
-        a = m-1
+  where
+    n = 1000
+    m = head $ filter (\x->x*x-x+41>n) [1..]
+    a = m-1
+
+euler28 :: Int
+euler28 =  1 + sum ((\x -> 4*x*x - 6 *(x-1)) <$> [3,5..1001])
+-- 669171001
+
+-- 9183
+euler29 :: Int
+euler29 = length $ List.nub $ (P.^) <$> [2..100::Integer] <*> [2..100::Integer]
+
+euler30 :: Int
+euler30 =
+  sum $ filter
+  (\x ->
+    fmap ((P.^ (5::Int)) . digitToInt) (show x) &
+    sum &
+    (==x))
+  [2 .. (5 * 9 P.^ (5::Int))]
+
+coins = [1,2,5,10,20,50,100,200]
+
+sumcoins :: [Int] -> Int
+sumcoins xs = sum $ zipWith (*) xs (toList coins)
+
+coinCombinations :: [Int] -> [[[Int]]]
+coinCombinations =
+  foldl
+    (\without p ->
+            let (poor,rich) = splitAt p without
+                with = poor ++ zipWith (++) (map (map (p:)) with)
+                                            rich
+            in with
+    ) ([[]] : repeat [])
+
+euler31 = length $ coinCombinations coins !! 200
 
 main :: IO ()
 main =
