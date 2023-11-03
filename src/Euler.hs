@@ -118,6 +118,8 @@ euler6 n = [1 .. n] & (\x -> (sum x * sum x) - sum ((\x -> x * x) <$> x))
 -- 104743
 euler7 :: Int -> Int
 euler7 n = primes List.!! (n - 1)
+-- sieve (x : xs) = x : sieve [n | n <- xs, (mod n x) /= 0]
+-- print $ last $ take 10001 $ sieve [2..]
 
 -- | euler8
 --
