@@ -1,2 +1,6 @@
 packages:
   eulerproject.cabal
+
+allow-newer:
+  string-interpolate:template-haskell,
+  string-interpolate:text

@@ -1,0 +1,7 @@
+#+TITLE: eulerproject
+
+[[https://hackage.haskell.org/package/eulerproject][file:https://img.shields.io/hackage/v/eulerproject.svg]]
+
+*Spoiler Alert!*
+
+Attempts at euler project solutions, using Haskell.

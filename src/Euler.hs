@@ -8,10 +8,9 @@
 {-# OPTIONS_GHC -Wno-missing-signatures #-}
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
+{-# OPTIONS_GHC -Wno-x-partial #-}
 
 module Euler where
-
--- import NumHask.Array.Shape
 
 import Data.Char
 import Data.Functor.Rep
@@ -647,6 +646,3 @@ coinCombinations =
 
 euler31 = length $ coinCombinations coins !! 200
 
-main :: IO ()
-main =
-  print ()

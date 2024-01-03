@@ -9,8 +9,8 @@ author: Tony Day
 maintainer: tonyday567@gmail.com
 homepage: https://github.com/tonyday567/eulerproject#readme
 bug-reports: https://github.com/tonyday567/eulerproject/issues
-synopsis: See readme.md
-description: See readme.md for description.
+synopsis: euler project
+description: euler project Haskell solutions
 build-type: Simple
 
 source-repository head
@@ -100,14 +100,3 @@ library
     exposed-modules: Euler
     default-extensions:
 
-executable perf-euler
-    import: ghc-options-stanza
-    import: ghc2021-stanza
-    main-is: app.hs
-    hs-source-dirs: app
-    build-depends:
-        , base                 >=4.7 && <5
-        , eulerproject
-        , optparse-applicative >=0.17 && <0.19
-        , perf                 >=0.10 && <0.12
-    ghc-options: -O2
