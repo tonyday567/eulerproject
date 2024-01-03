@@ -416,9 +416,18 @@ euler14 n = go 1 (1, 1)
         (go (x + 1) (bool (max', maxx) (collatz x, x) (collatz x > max')))
         (n >= x)
 
+-- | euler 15
+--
+-- >>> euler15 20
+-- 137846528820
 euler15 :: Int -> Int
 euler15 n = iterate (List.scanl1 (+)) (repeat 1) List.!! n List.!! n
 
+
+-- | euler 16
+--
+-- >>> euler16 1000
+-- 1366
 euler16 :: Int -> Int
 euler16 x = sum $ (\x -> ord x - 48) <$> show (2 P.^ x :: Integer)
 
@@ -495,7 +504,7 @@ euler19 =
 
 -- | one-liner
 --
--- >>> euler20 1000
+-- >>> euler20 100
 -- 648
 euler20 :: Integer -> Int
 euler20 x = (product [1..x] :: Integer) & show & fmap digitToInt & sum
@@ -530,7 +539,7 @@ sumDivs x =
     fs = pfactors' x
 
 
--- |
+-- | euler 22
 --
 -- >>> euler22
 -- 871198282
@@ -544,7 +553,7 @@ euler22 = do
         Text.splitOn "," (Text.pack str)
   pure $ sum $ zipWith (*) [1..] $ fmap (sum . fmap (\c -> ord c - ord 'A' + 1) . Text.unpack) names
 
--- |
+-- | euler 23
 --
 -- >>> euler23 28123
 -- 4179871
@@ -558,8 +567,8 @@ euler23 x =
 
 -- |
 --
--- >>> euler24 1000000 10
--- 2783915460
+-- > euler24 1000000 10
+-- "2783915460"
 euler24 :: Int -> Int -> String
 euler24 i x =
   mconcat $ fmap show . (List.!! (i-1)) $ lp1 [0..(x-1)]
@@ -569,18 +578,19 @@ lp1 xs = do
   (ys, z:zs) <- zip (List.inits xs) (List.tails xs)
   (z:) <$> lp1 (ys <> zs)
 
--- |
+-- | euler 25
 --
--- >>> euler 1000
+-- FIXME: euler25 timing out
+-- > euler25 1000
 -- 4782
 euler25 :: Int -> Int
 euler25 x =
   maybe undefined (1+) $ List.elemIndex x ((show >>> length) <$> List.unfoldr (\(x0,x1) -> Just (x1, (x1, x0+x1))) (0::Int,1))
 
--- |
+-- | euler 26
 --
--- >>> euler28 1000
--- 984
+-- >>> euler26 1000
+-- 983
 euler26 :: Int -> Int
 euler26 n = 1 + fromMaybe undefined (List.elemIndex True $ fmap (\x -> maximum xs' == x) xs')
   where
@@ -612,14 +622,25 @@ problem_27 = -(2*a-1)*(a*a-a+41)
     m = head $ filter (\x->x*x-x+41>n) [1..]
     a = m-1
 
+
+-- | euler 28
+--
+-- >>> euler28
+-- 669171001
 euler28 :: Int
 euler28 =  1 + sum ((\x -> 4*x*x - 6 *(x-1)) <$> [3,5..1001])
--- 669171001
 
+-- | euler 29
+--
+-- >>> euler29
 -- 9183
 euler29 :: Int
 euler29 = length $ List.nub $ (P.^) <$> [2..100::Integer] <*> [2..100::Integer]
 
+-- | euler 30
+--
+-- >>> euler30
+-- 443839
 euler30 :: Int
 euler30 =
   sum $ filter
@@ -644,5 +665,8 @@ coinCombinations =
             in with
     ) ([[]] : repeat [])
 
+-- | euler 31
+--
+-- >>> euler31
+-- 73682
 euler31 = length $ coinCombinations coins !! 200
-
