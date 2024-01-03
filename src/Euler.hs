@@ -1,8 +1,8 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE NegativeLiterals #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RebindableSyntax #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 {-# OPTIONS_GHC -Wno-missing-signatures #-}
@@ -12,24 +12,24 @@
 
 module Euler where
 
+-- import Data.Map.Strict qualified as Map
+
+import Control.Monad
 import Data.Char
 import Data.Functor.Rep
+import Data.IntSet qualified as IntSet
 import Data.List qualified as List
 import Data.Numbers.Primes (primes)
 import Data.Ord
 import Data.Proxy
+import Data.String.Interpolate
+import Data.Text qualified as Text
+import Data.Time.Calendar
 import GHC.Arr qualified as Arr
 import GHC.TypeNats
 import NumHask.Array.Fixed qualified as A
 import NumHask.Prelude
 import Prelude qualified as P
-import Data.String.Interpolate
-import Data.Time.Calendar.WeekDate
-import Data.Time.Calendar
--- import Data.Map.Strict qualified as Map
-import Data.Text qualified as Text
-import Control.Monad
-import Data.IntSet qualified as IntSet
 
 -- | Sum of Multiples
 --
@@ -57,9 +57,9 @@ euler2 limit s@(s0, s1) =
            in Just (n, (s1', n))
       )
       s
-    & takeWhile (<= limit)
-    & filter ((== 0) . (`mod` 2))
-    & sum
+      & takeWhile (<= limit)
+      & filter ((== 0) . (`mod` 2))
+      & sum
 
 -- | primes
 --
@@ -76,9 +76,9 @@ euler3 n = lfactor n primes
 
 lfactor _ [] = undefined
 lfactor n (p : ps)
-      | p * p > n = n
-      | n `mod` p == 0 = lfactor (n `div` p) (p : ps)
-      | otherwise = lfactor n ps
+  | p * p > n = n
+  | n `mod` p == 0 = lfactor (n `div` p) (p : ps)
+  | otherwise = lfactor n ps
 
 -- | palindrome product
 --
@@ -117,6 +117,7 @@ euler6 n = [1 .. n] & (\x -> (sum x * sum x) - sum ((\x -> x * x) <$> x))
 -- 104743
 euler7 :: Int -> Int
 euler7 n = primes List.!! (n - 1)
+
 -- sieve (x : xs) = x : sieve [n | n <- xs, (mod n x) /= 0]
 -- print $ last $ take 10001 $ sieve [2..]
 
@@ -423,14 +424,12 @@ euler14 n = go 1 (1, 1)
 euler15 :: Int -> Int
 euler15 n = iterate (List.scanl1 (+)) (repeat 1) List.!! n List.!! n
 
-
 -- | euler 16
 --
 -- >>> euler16 1000
 -- 1366
 euler16 :: Int -> Int
 euler16 x = sum $ (\x -> ord x - 48) <$> show (2 P.^ x :: Integer)
-
 
 -- | euler17
 --
@@ -439,7 +438,7 @@ euler16 x = sum $ (\x -> ord x - 48) <$> show (2 P.^ x :: Integer)
 euler17 :: [Int] -> Int
 euler17 xs = sum $ length . letters <$> xs
 
-singles = ["", "one","two","three","four","five","six","seven","eight","nine"]
+singles = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
 
 teens = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
 
@@ -450,31 +449,30 @@ letters x
   | x < 10 = singles !! x
   | x < 20 = teens !! (x - 10)
   | x < 100 = case x `divMod` 10 of
-      (x1,0) -> tens !! (x1-2)
-      (x1,x0) -> tens !! (x1-2) <> letters x0
+      (x1, 0) -> tens !! (x1 - 2)
+      (x1, x0) -> tens !! (x1 - 2) <> letters x0
   | x < 1000 = case x `divMod` 100 of
-      (x2,0) -> letters x2 <> "hundred"
-      (x2,x0) -> letters x2 <> "hundred" <> "and" <> letters x0
+      (x2, 0) -> letters x2 <> "hundred"
+      (x2, x0) -> letters x2 <> "hundred" <> "and" <> letters x0
   | x == 1000 = "one" <> "thousand"
 
 tri18 :: [[Int]]
 tri18 =
-  [
-    [75],
-    [95,64],
-    [17,47,82],
-    [18,35,87,10],
-    [20,04,82,47,65],
-    [19,01,23,75,03,34],
-    [88,02,77,73,07,63,67],
-    [99,65,04,28,06,16,70,92],
-    [41,41,26,56,83,40,80,70,33],
-    [41,48,72,33,47,32,37,16,94,29],
-    [53,71,44,65,25,43,91,52,97,51,14],
-    [70,11,33,28,77,73,17,78,39,68,17,57],
-    [91,71,52,38,17,14,91,43,58,50,27,29,48],
-    [63,66,04,68,89,53,67,30,73,16,69,87,40,31],
-    [04,62,98,27,23,09,70,98,73,93,38,53,60,04,23]
+  [ [75],
+    [95, 64],
+    [17, 47, 82],
+    [18, 35, 87, 10],
+    [20, 04, 82, 47, 65],
+    [19, 01, 23, 75, 03, 34],
+    [88, 02, 77, 73, 07, 63, 67],
+    [99, 65, 04, 28, 06, 16, 70, 92],
+    [41, 41, 26, 56, 83, 40, 80, 70, 33],
+    [41, 48, 72, 33, 47, 32, 37, 16, 94, 29],
+    [53, 71, 44, 65, 25, 43, 91, 52, 97, 51, 14],
+    [70, 11, 33, 28, 77, 73, 17, 78, 39, 68, 17, 57],
+    [91, 71, 52, 38, 17, 14, 91, 43, 58, 50, 27, 29, 48],
+    [63, 66, 04, 68, 89, 53, 67, 30, 73, 16, 69, 87, 40, 31],
+    [04, 62, 98, 27, 23, 09, 70, 98, 73, 93, 38, 53, 60, 04, 23]
   ]
 
 -- | Brute force
@@ -487,12 +485,15 @@ euler18 level =
     (\x y -> (:) <$> x <*> y)
     -- starting at the top - index is always 0
     [[0]]
-    (replicate level [0,1]) &
-    fmap (reverse >>>
-          accsum >>> zip [0..] >>>
-          fmap (\(x1, x2) -> (tri18 !! x1) !! x2) >>>
-          sum) &
-    maximum
+    (replicate level [0, 1])
+    & fmap
+      ( reverse
+          >>> accsum
+          >>> zip [0 ..]
+          >>> fmap (\(x1, x2) -> (tri18 !! x1) !! x2)
+          >>> sum
+      )
+    & maximum
 
 -- | time library
 --
@@ -500,28 +501,28 @@ euler18 level =
 -- 171
 euler19 :: Int
 euler19 =
-  (\y m -> fromGregorian y m 1) <$> [1901 .. 2000] <*> [1 .. 12] & fmap dayOfWeek & filter (==Sunday) & length
+  (\y m -> fromGregorian y m 1) <$> [1901 .. 2000] <*> [1 .. 12] & fmap dayOfWeek & filter (== Sunday) & length
 
 -- | one-liner
 --
 -- >>> euler20 100
 -- 648
 euler20 :: Integer -> Int
-euler20 x = (product [1..x] :: Integer) & show & fmap digitToInt & sum
+euler20 x = (product [1 .. x] :: Integer) & show & fmap digitToInt & sum
 
 --  filter (\x -> product (pfactors' x) /= x) [1..10000]
 --
 -- >>> euler21 10000
 -- 31626
 euler21 :: Int -> Int
-euler21 n =  filter (\x -> (x /= sumDivs x) && (x & sumDivs & sumDivs & (==x))) [1..n] & sum
+euler21 n = filter (\x -> (x /= sumDivs x) && (x & sumDivs & sumDivs & (== x))) [1 .. n] & sum
 
 pfactors' :: Int -> [Int]
 pfactors' x = go x primes []
   where
     go x (p : ps) xs
-      | p * p > x = x:xs
-      | x `mod` p == 0 = go (x `div` p) (p:ps) (p:xs)
+      | p * p > x = x : xs
+      | x `mod` p == 0 = go (x `div` p) (p : ps) (p : xs)
       | otherwise = go x ps xs
 
 -- | @combinations k xs@ generates a list of k-combinations from xs
@@ -533,11 +534,14 @@ combinations 0 _ = [[]]
 combinations m l = [x : ys | x : xs <- List.tails l, ys <- combinations (m - 1) xs]
 
 sumDivs x =
-  ((`combinations` fs) <$> [1..(length fs - 1)]) &
-  mconcat & fmap product & List.nub & sum & (+1)
+  ((`combinations` fs) <$> [1 .. (length fs - 1)])
+    & mconcat
+    & fmap product
+    & List.nub
+    & sum
+    & (+ 1)
   where
     fs = pfactors' x
-
 
 -- | euler 22
 --
@@ -547,11 +551,12 @@ euler22 = do
   str <- readFile "other/0022_names.txt"
   let names =
         List.sort $
-        fromMaybe undefined .
-        ( Text.stripSuffix "\"" <=<
-          Text.stripPrefix "\"") <$>
-        Text.splitOn "," (Text.pack str)
-  pure $ sum $ zipWith (*) [1..] $ fmap (sum . fmap (\c -> ord c - ord 'A' + 1) . Text.unpack) names
+          fromMaybe undefined
+            . ( Text.stripSuffix "\""
+                  <=< Text.stripPrefix "\""
+              )
+            <$> Text.splitOn "," (Text.pack str)
+  pure $ sum $ zipWith (*) [1 ..] $ fmap (sum . fmap (\c -> ord c - ord 'A' + 1) . Text.unpack) names
 
 -- | euler 23
 --
@@ -559,11 +564,11 @@ euler22 = do
 -- 4179871
 euler23 :: Int -> Int
 euler23 x =
-  ((x * (x+1)) `div` 2) - sum (filter (<=x) $ IntSet.toList abundantSet)
-   where
-     abundants = filter (\x -> x < sumDivs x) [1..x]
-     abundants2 = (+) <$> abundants <*> abundants
-     abundantSet = abundants2 & IntSet.fromList
+  ((x * (x + 1)) `div` 2) - sum (filter (<= x) $ IntSet.toList abundantSet)
+  where
+    abundants = filter (\x -> x < sumDivs x) [1 .. x]
+    abundants2 = (+) <$> abundants <*> abundants
+    abundantSet = abundants2 & IntSet.fromList
 
 -- |
 --
@@ -571,12 +576,12 @@ euler23 x =
 -- "2783915460"
 euler24 :: Int -> Int -> String
 euler24 i x =
-  mconcat $ fmap show . (List.!! (i-1)) $ lp1 [0..(x-1)]
+  mconcat $ fmap show . (List.!! (i - 1)) $ lp1 [0 .. (x - 1)]
 
 lp1 [] = [[]]
 lp1 xs = do
-  (ys, z:zs) <- zip (List.inits xs) (List.tails xs)
-  (z:) <$> lp1 (ys <> zs)
+  (ys, z : zs) <- zip (List.inits xs) (List.tails xs)
+  (z :) <$> lp1 (ys <> zs)
 
 -- | euler 25
 --
@@ -585,7 +590,7 @@ lp1 xs = do
 -- 4782
 euler25 :: Int -> Int
 euler25 x =
-  maybe undefined (1+) $ List.elemIndex x ((show >>> length) <$> List.unfoldr (\(x0,x1) -> Just (x1, (x1, x0+x1))) (0::Int,1))
+  maybe undefined (1 +) $ List.elemIndex x ((show >>> length) <$> List.unfoldr (\(x0, x1) -> Just (x1, (x1, x0 + x1))) (0 :: Int, 1))
 
 -- | euler 26
 --
@@ -594,48 +599,48 @@ euler25 x =
 euler26 :: Int -> Int
 euler26 n = 1 + fromMaybe undefined (List.elemIndex True $ fmap (\x -> maximum xs' == x) xs')
   where
-    xs' = rep <$> [1..(n-1)]
-    rep x = go [] $ fmap snd $ (\x -> List.unfoldr (\n -> Just ((\(d,m) -> ((d,m),m*10)) $ n `divMod` x)) (10 P.^ (length $ show x) :: Int)) x
+    xs' = rep <$> [1 .. (n - 1)]
+    rep x = go [] $ snd <$> (\x -> List.unfoldr (\n -> Just ((\(d, m) -> ((d, m), m * 10)) $ n `divMod` x)) (10 P.^ length (show x) :: Int)) x
     go [] [] = 0
-    go _ (0:_) = 0
-    go res (x:xs) = maybe (go (x:res) xs) (+1) (x `List.elemIndex` res)
+    go _ (0 : _) = 0
+    go res (x : xs) = maybe (go (x : res) xs) (+ 1) (x `List.elemIndex` res)
 
 longDivStream x =
-  fmap snd $ (\x -> List.unfoldr (\n -> Just ((\(d,m) -> ((d,m),m*10)) $ n `divMod` x)) (10 P.^ (length $ show x) :: Int)) x
+  snd <$> (\x -> List.unfoldr (\n -> Just ((\(d, m) -> ((d, m), m * 10)) $ n `divMod` x)) (10 P.^ length (show x) :: Int)) x
 
 -- -61 971
 euler27 :: Int -> Int -> Int -> Int
 euler27 a b n = n * n + a * n + b
 
-isPrime x = foldr (\p b -> (x==p) || b) False (takeWhile (<=x) primes)
+isPrime x = foldr (\p b -> (x == p) || b) False (takeWhile (<= x) primes)
 
-consPrimes a b = length $ takeWhile isPrime $ euler27 a b <$> [0..]
+consPrimes a b = length $ takeWhile isPrime $ euler27 a b <$> [0 ..]
 
 rangeAB :: [(Int, Int)]
 rangeAB = (,) <$> [-999 .. 999] <*> [-1000 .. 1000]
+
 -- head . List.sortOn (Down . uncurry consPrimes) $ rangeAB
 
 problem_27 :: Int
-problem_27 = -(2*a-1)*(a*a-a+41)
+problem_27 = -(2 * a - 1) * (a * a - a + 41)
   where
     n = 1000
-    m = head $ filter (\x->x*x-x+41>n) [1..]
-    a = m-1
-
+    m = head $ filter (\x -> x * x - x + 41 > n) [1 ..]
+    a = m - 1
 
 -- | euler 28
 --
 -- >>> euler28
 -- 669171001
 euler28 :: Int
-euler28 =  1 + sum ((\x -> 4*x*x - 6 *(x-1)) <$> [3,5..1001])
+euler28 = 1 + sum ((\x -> 4 * x * x - 6 * (x - 1)) <$> [3, 5 .. 1001])
 
 -- | euler 29
 --
 -- >>> euler29
 -- 9183
 euler29 :: Int
-euler29 = length $ List.nub $ (P.^) <$> [2..100::Integer] <*> [2..100::Integer]
+euler29 = length $ List.nub $ (P.^) <$> [2 .. 100 :: Integer] <*> [2 .. 100 :: Integer]
 
 -- | euler 30
 --
@@ -643,14 +648,16 @@ euler29 = length $ List.nub $ (P.^) <$> [2..100::Integer] <*> [2..100::Integer]
 -- 443839
 euler30 :: Int
 euler30 =
-  sum $ filter
-  (\x ->
-    fmap ((P.^ (5::Int)) . digitToInt) (show x) &
-    sum &
-    (==x))
-  [2 .. (5 * 9 P.^ (5::Int))]
+  sum $
+    filter
+      ( \x ->
+          fmap ((P.^ (5 :: Int)) . digitToInt) (show x)
+            & sum
+            & (== x)
+      )
+      [2 .. (5 * 9 P.^ (5 :: Int))]
 
-coins = [1,2,5,10,20,50,100,200]
+coins = [1, 2, 5, 10, 20, 50, 100, 200]
 
 sumcoins :: [Int] -> Int
 sumcoins xs = sum $ zipWith (*) xs (toList coins)
@@ -658,12 +665,17 @@ sumcoins xs = sum $ zipWith (*) xs (toList coins)
 coinCombinations :: [Int] -> [[[Int]]]
 coinCombinations =
   foldl
-    (\without p ->
-            let (poor,rich) = splitAt p without
-                with = poor ++ zipWith (++) (map (map (p:)) with)
-                                            rich
-            in with
-    ) ([[]] : repeat [])
+    ( \without p ->
+        let (poor, rich) = splitAt p without
+            with =
+              poor
+                ++ zipWith
+                  (++)
+                  (map (map (p :)) with)
+                  rich
+         in with
+    )
+    ([[]] : repeat [])
 
 -- | euler 31
 --
