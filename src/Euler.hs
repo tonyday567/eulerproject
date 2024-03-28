@@ -560,7 +560,7 @@ euler22 = do
 
 -- | euler 23
 --
--- >>> euler23 28123
+-- > euler23 28123
 -- 4179871
 euler23 :: Int -> Int
 euler23 x =
