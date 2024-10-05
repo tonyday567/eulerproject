@@ -4,3 +4,4 @@ stack.yaml.lock
 **/.DS_Store
 cabal.project.local
 /.hie/
+/.ghc.environment.aarch64-darwin-9.8.2

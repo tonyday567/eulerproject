@@ -2,7 +2,6 @@
 {-# LANGUAGE NegativeLiterals #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE RebindableSyntax #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 {-# OPTIONS_GHC -Wno-missing-signatures #-}
@@ -10,13 +9,14 @@
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 {-# OPTIONS_GHC -Wno-x-partial #-}
 
-module Euler where
+module Eulerproject where
 
 -- import Data.Map.Strict qualified as Map
+import GHC.Exts
 
 import Control.Monad
 import Data.Char
-import Data.Functor.Rep
+-- import Data.Functor.Rep
 import Data.IntSet qualified as IntSet
 import Data.List qualified as List
 import Data.Numbers.Primes (primes)
@@ -27,9 +27,19 @@ import Data.Text qualified as Text
 import Data.Time.Calendar
 import GHC.Arr qualified as Arr
 import GHC.TypeNats
-import NumHask.Array.Fixed qualified as A
-import NumHask.Prelude
-import Prelude qualified as P
+import Harpie.Fixed qualified as F
+-- import Harpie.Shape qualified as S
+import Prelude as P
+import Data.Function ((&))
+import Control.Category ((>>>))
+import Data.Maybe
+import Data.Bool
+import Data.Foldable hiding (toList)
+import Data.Traversable
+
+-- $setup
+--
+-- >>> import Eulerproject
 
 -- | Sum of Multiples
 --
@@ -131,9 +141,8 @@ euler8 n =
     ( \i ->
         product $
           take n $
-            drop i $
-              (\x -> x - 48)
-                <$> (ord <$> digits)
+            drop i
+              ((\x -> x - 48) . ord <$> digits)
     )
       <$> [0 .. (length digits - n)]
 
@@ -218,11 +227,11 @@ euler11 :: Int
 euler11 = maximum (h <> v <> d <> r)
   where
     xs = maybe (-1) fst . listToMaybe . reads <$> words euler11Data :: [Int]
-    a = fromList xs :: A.Array '[20, 20] Int
-    h = (\i j -> product ((\x -> index a [i, j + x]) <$> [0 .. 3])) <$> [0 .. 19] <*> [0 .. 16]
-    v = (\i j -> product ((\x -> index a [i + x, j]) <$> [0 .. 3])) <$> [0 .. 16] <*> [0 .. 19]
-    d = (\i j -> product ((\x -> index a [i + x, j + x]) <$> [0 .. 3])) <$> [0 .. 16] <*> [0 .. 16]
-    r = (\i j -> product ((\x -> index a [i + x, j - x]) <$> [0 .. 3])) <$> [0 .. 16] <*> [3 .. 19]
+    a = F.array @[20,20] @Int xs
+    h = (\i j -> product ((\x -> F.unsafeIndex a [i, j + x]) <$> [0 .. 3])) <$> [0 .. 19] <*> [0 .. 16]
+    v = (\i j -> product ((\x -> F.unsafeIndex a [i + x, j]) <$> [0 .. 3])) <$> [0 .. 16] <*> [0 .. 19]
+    d = (\i j -> product ((\x -> F.unsafeIndex a [i + x, j + x]) <$> [0 .. 3])) <$> [0 .. 16] <*> [0 .. 16]
+    r = (\i j -> product ((\x -> F.unsafeIndex a [i + x, j - x]) <$> [0 .. 3])) <$> [0 .. 16] <*> [3 .. 19]
 
 factors :: Int -> [Int]
 factors x = go x 1 []
@@ -234,7 +243,7 @@ factors x = go x 1 []
 
 factors' x = product $ (+ 1) . length <$> List.group (pfactor x primes)
 
-pfactor :: (Ord a, Integral a, FromInteger a) => a -> [a] -> [a]
+pfactor :: (Integral a) => a -> [a] -> [a]
 pfactor n (p : ps)
   | p * p > n = [n]
   | n `mod` p == 0 = p : pfactor (n `div` p) (p : ps)
@@ -382,9 +391,9 @@ euler14Array' n = a
       where
         y = if even x then x `div` 2 else 3 * x + 1
 
-collatzArray :: A.Array '[10000] Int
+collatzArray :: F.Array '[10000] Int
 collatzArray =
-  tabulate go
+  F.unsafeTabulate go
   where
     go (0 : _) = 1
     go (i : _) = collatz2 collatzArray i
@@ -393,12 +402,12 @@ collatz1 :: Int -> Int
 collatz1 x = bool (x `div` 2) (3 * x + 1) (even x)
 
 collatz2 ::
-  forall n. (KnownNat n) => A.Array '[n] Int -> Int -> Int
+  forall n. (KnownNat n) => F.Array '[n] Int -> Int -> Int
 collatz2 arr x =
   let y = collatz1 (x + 1)
-   in bool (1 + collatz2 arr y) (1 + index arr [y]) (y <= s)
+   in bool (1 + collatz2 arr y) (1 + F.unsafeIndex arr [y]) (y <= s)
   where
-    s = P.fromIntegral $ natVal @n Proxy
+    s = fromIntegral $ natVal @n Proxy
 
 collatz :: Int -> Int
 collatz x = go x 1
@@ -494,6 +503,8 @@ euler18 level =
           >>> sum
       )
     & maximum
+  where
+    accsum = P.snd . mapAccumL (\a b -> (a + b, a + b)) 0
 
 -- | time library
 --
@@ -622,7 +633,7 @@ rangeAB = (,) <$> [-999 .. 999] <*> [-1000 .. 1000]
 -- head . List.sortOn (Down . uncurry consPrimes) $ rangeAB
 
 problem_27 :: Int
-problem_27 = -(2 * a - 1) * (a * a - a + 41)
+problem_27 = -((2 * a - 1) * (a * a - a + 41))
   where
     n = 1000
     m = head $ filter (\x -> x * x - x + 41 > n) [1 ..]
