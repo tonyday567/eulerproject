@@ -5,3 +5,4 @@ stack.yaml.lock
 cabal.project.local
 /.hie/
 /.ghc.environment.aarch64-darwin-9.8.2
+/.ghc.environment.aarch64-darwin-9.10.1

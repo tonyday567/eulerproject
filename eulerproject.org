@@ -17,7 +17,7 @@ import Data.Ord
 import Data.Proxy
 import GHC.Arr qualified as Arr
 import GHC.TypeNats
-import NumHask.Array.Fixed qualified as A
+import Harpie.Fixed qualified as F
 import NumHask.Prelude
 import Prelude qualified as P
 import Data.String.Interpolate
@@ -38,8 +38,6 @@ import Data.IntSet qualified as IntSet
 : Loaded GHCi configuration from /Users/tonyday567/haskell/eulerproject/.ghci
 : [1 of 1] Compiling Euler            ( src/Euler.hs, interpreted )
 : Ok, one module loaded.
-
-
 
 * ToDo cleanups
 
