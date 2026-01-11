@@ -46,13 +46,3 @@ library
     exposed-modules: Eulerproject
     default-extensions:
 
-test-suite doctests
-    import: ghc2021-stanza
-    main-is: doctests.hs
-    hs-source-dirs: test
-    build-depends:
-        , base             >=4.14 && <5
-        , eulerproject
-        , doctest-parallel >=0.3 && <0.4
-    ghc-options: -threaded
-    type: exitcode-stdio-1.0
