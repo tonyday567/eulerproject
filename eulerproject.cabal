@@ -14,35 +14,34 @@ description: euler project Haskell solutions
 build-type: Simple
 
 source-repository head
-    type: git
-    location: https://github.com/tonyday567/eulerproject
+  type: git
+  location: https://github.com/tonyday567/eulerproject
 
 common ghc-options-stanza
-    ghc-options:
-        -Wall
-        -Wcompat
-        -Widentities
-        -Wincomplete-record-updates
-        -Wincomplete-uni-patterns
-        -Wpartial-fields
-        -Wredundant-constraints
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Widentities
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wpartial-fields
+    -Wredundant-constraints
 
 common ghc2021-stanza
-    default-language: GHC2021
+  default-language: GHC2021
 
 library
-    import: ghc-options-stanza
-    import: ghc2021-stanza
-    hs-source-dirs: src
-    build-depends:
-        , adjunctions        >=4.0 && <5
-        , base               >=4.7 && <5
-        , harpie             >=0.1 && <0.2
-        , primes             >=0.2 && <0.3
-        , string-interpolate >=0.3 && <0.4
-        , time
-        , containers
-        , text
-    exposed-modules: Eulerproject
-    default-extensions:
+  import: ghc-options-stanza
+  import: ghc2021-stanza
+  hs-source-dirs: src
+  build-depends:
+    adjunctions >=4.0 && <5,
+    base >=4.7 && <5,
+    containers,
+    harpie >=0.1 && <0.2,
+    primes >=0.2 && <0.3,
+    text,
+    time,
 
+  exposed-modules: Eulerproject
+  default-extensions:
