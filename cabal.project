@@ -2,6 +2,8 @@ packages:
   eulerproject.cabal
 
 write-ghc-environment-files: always
-allow-newer: eulerproject:base
-allow-newer: eulerproject:harpie
-allow-newer: indexed-traversable:base
+
+allow-newer:
+  eulerproject:base,
+  eulerproject:harpie,
+  quickcheck-instances:base
