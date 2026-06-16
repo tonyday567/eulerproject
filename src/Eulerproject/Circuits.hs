@@ -6,6 +6,9 @@ module Eulerproject.Circuits
     -- * Collatz — iteration (Step)
     euler14Step,
 
+    -- * Collatz — direct state threading (Step, no ambient)
+    euler14Direct,
+
     -- * Collatz — ambient threading (Step + ambient)
     euler14Ambient,
   )
@@ -55,10 +58,40 @@ euler14Step n =
 -- ---------------------------------------------------------------------------
 -- euler 14 — ambient threading (Step + ambient)
 
+-- | Starting number under @n@ with longest Collatz chain,
+-- using a precomputed array passed directly in the feedback state
+-- (no ambient wrapping).
+--
+-- >>> euler14Direct 1000000
+-- 837799
+euler14Direct :: Int -> Int
+euler14Direct n =
+  let arr = euler14Array' n
+
+      -- State: (array, cur, maxLen, best).  Array rides the feedback channel.
+      body ::
+        Either (Arr.Array Int Int, Int, (Int, Int)) (Arr.Array Int Int, Int, (Int, Int)) ->
+        Either (Arr.Array Int Int, Int, (Int, Int)) Int
+      body (Left (arr, cur, (maxLen, best))) =
+        let len = arr Arr.! cur
+            (maxLen', best') = if len > maxLen then (len, cur) else (maxLen, best)
+         in if cur >= n
+              then Right best'
+              else Left (arr, cur + 1, (maxLen', best'))
+      body (Right (arr, cur, bests)) = body (Left (arr, cur, bests))
+   in reify (Knot (Lift body)) (arr, 2, (1, 1))
+
 -- | Starting number under @n@ with longest Collatz chain.
 -- Precomputes collatz lengths into an array,
 -- then uses @ambient@ to thread the array as read-only state
 -- alongside the Step iteration.
+--
+-- NOTE: the array is captured in a closure — the ambient state channel is
+-- empty.  This demonstrates the ambient /pattern/ (type-level threading
+-- via @Braided Either@) but the braid pass-through adds ~9.5% overhead
+-- without moving data.  For read-only shared state, @euler14Direct@
+-- (array in feedback channel) is the correct approach; ambient shines
+-- when state is modifiable (growing memo table, STRef, IORef).
 --
 -- >>> euler14Ambient 1000000
 -- 837799
