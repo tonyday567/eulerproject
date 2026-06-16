@@ -72,13 +72,13 @@ euler14Direct n =
       body ::
         Either (Arr.Array Int Int, Int, (Int, Int)) (Arr.Array Int Int, Int, (Int, Int)) ->
         Either (Arr.Array Int Int, Int, (Int, Int)) Int
-      body (Left (arr, cur, (maxLen, best))) =
-        let len = arr Arr.! cur
+      body (Left (a, cur, (maxLen, best))) =
+        let len = a Arr.! cur
             (maxLen', best') = if len > maxLen then (len, cur) else (maxLen, best)
          in if cur >= n
               then Right best'
-              else Left (arr, cur + 1, (maxLen', best'))
-      body (Right (arr, cur, bests)) = body (Left (arr, cur, bests))
+              else Left (a, cur + 1, (maxLen', best'))
+      body (Right (a, cur, bests)) = body (Left (a, cur, bests))
    in reify (Knot (Lift body)) (arr, 2, (1, 1))
 
 -- | Starting number under @n@ with longest Collatz chain.

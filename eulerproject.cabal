@@ -62,3 +62,21 @@ executable bench
     deepseq,
     eulerproject,
     text,
+
+executable verify-ambient
+  import: ghc-options-stanza
+  import: ghc2021-stanza
+  main-is: app/VerifyAmbient.hs
+  build-depends:
+    base,
+    circuits,
+    eulerproject,
+
+executable fmap-breaks
+  import: ghc-options-stanza
+  import: ghc2021-stanza
+  main-is: app/FmapBreaks.hs
+  build-depends:
+    base,
+    circuits,
+    eulerproject,
