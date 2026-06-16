@@ -37,6 +37,8 @@ library
   build-depends:
     adjunctions >=4.0 && <5,
     base >=4.7 && <5,
+    circuits >=0.1 && <0.3,
+    circuits-meter >=0.1 && <0.3,
     containers,
     harpie >=0.1 && <0.2,
     primes >=0.2 && <0.3,
@@ -45,6 +47,18 @@ library
 
   exposed-modules:
     Eulerproject
+    Eulerproject.Circuits
     Eulerproject.Data
     Eulerproject.Helpers
   default-extensions:
+
+executable bench
+  import: ghc-options-stanza
+  import: ghc2021-stanza
+  main-is: app/Bench.hs
+  build-depends:
+    base,
+    circuits-meter,
+    deepseq,
+    eulerproject,
+    text,
