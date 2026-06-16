@@ -7,3 +7,5 @@ cabal.project.local
 /.ghc.environment.aarch64-darwin-9.8.2
 /.ghc.environment.aarch64-darwin-9.10.1
 .ghc.environment.*
+fingerprints/
+app/

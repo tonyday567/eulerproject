@@ -43,5 +43,8 @@ library
     text,
     time,
 
-  exposed-modules: Eulerproject
+  exposed-modules:
+    Eulerproject
+    Eulerproject.Data
+    Eulerproject.Helpers
   default-extensions:
