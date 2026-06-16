@@ -2,7 +2,7 @@
 {-# LANGUAGE MultilineStrings #-}
 {-# LANGUAGE NegativeLiterals #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes #-}
+
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 {-# OPTIONS_GHC -Wno-missing-signatures #-}
