@@ -1,0 +1,5 @@
+# hlint configuration for eulerproject
+- arguments:
+  - --ignore-glob=app/**
+  - --ignore-glob=fingerprints/**
+  - --ignore-glob=dist-newstyle/**
